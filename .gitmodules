@@ -1,0 +1,3 @@
+[submodule "putemg-feature-extractor"]
+	path = putemg-feature-extractor
+	url = https://github.com/biolab-put/putemg-feature-extractor
