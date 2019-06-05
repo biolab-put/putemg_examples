@@ -19,8 +19,8 @@ def usage():
     print("    calculate_features <feature_config_xml> <input_hdf5> <output_hdf5>")
     print("        Calculates EMG signal features based on given XML configuration")
     print()
-    print("        <feature_config_xml>: XML fil,e containing feature descriptors")
-    print("                               (see putemg_processing/all_features.xml for example)")
+    print("        <feature_config_xml>: XML file containing feature descriptors")
+    print("                              (see putemg_processing/all_features.xml for example)")
     print("        <input_hdf5>: putEMG raw or filtered HDF5 file containing experiment data")
     print()
     print("Examples:")
@@ -31,7 +31,7 @@ def usage():
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print("Too few parameters")
+        print("Invalid parameter count")
         usage()
 
     command = sys.argv[1]
