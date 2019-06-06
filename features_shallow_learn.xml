@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<desc>
+    <feature name="RMS" window="2500" step="1250" />                    <!--Root Mean Square-->
+    <feature name="MAV" window="2500" step="1250" />                    <!--Mean Absolute Value-->
+    <feature name="WL" window="2500" step="1250" />                     <!--Waveform Length-->
+    <feature name="ZC" window="2500" step="1250" threshold="30" />      <!--Zero Crossing-->
+    <feature name="SSC" window="2500" step="1250" threshold="16"/>      <!--Slope Sign Change-->
+    <feature name="IAV" window="2500" step="1250" />                    <!--Integral Absolute Value-->
+    <feature name="VAR" window="2500" step="1250" />                    <!--Variance-->
+    <feature name="WAMP" window="2500" step="1250" threshold="10"/>     <!--Willison Amplitude-->
+</desc>
