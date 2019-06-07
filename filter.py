@@ -17,13 +17,16 @@ def usage():
     print("     <output_hdf5>: output HDF5 file containing filtered data")
     print()
     print("Example:")
-    print("{:s} ../Data-HDF5/emg_gestures-14-sequential-2018-04-06-10-30-11-595.hdf5 "
+    print("{:s} ../putEMG/Data-HDF5/emg_gestures-14-sequential-2018-04-06-10-30-11-595.hdf5 "
           "filtered-14-sequential-1.hdf5".
           format(os.path.basename(__file__)))
     exit(1)
 
 
 if __name__ == '__main__':
+    if '-h' in sys.argv or '--help' in sys.argv:
+        usage()
+
     if len(sys.argv) != 3:
         print("Invalid parameter count")
         usage()

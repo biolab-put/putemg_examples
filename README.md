@@ -1,9 +1,9 @@
 # putemg_examples
 
 Dedicated exemplary scripts to be used with putEMG dataset, available at: https://biolab.put.poznan.pl/putemg-dataset/.
-putemg_examples includes example script that can be very helpful when starting to work with putEMG dataset.
+putemg_examples includes example scripts that can be very helpful when starting to work with putEMG dataset.
 Scripts include example for filtering the raw sEMG data from the dataset, example how to use dependent putemg_features 
-to calculate desired features. Also machine learning example, including LDA, QDA, kNN and SVM classifiers, is available.
+to calculate desired feature set. Also machine learning example, including LDA, QDA, kNN and SVM classifiers, is available.
 
 All information about putEMG dataset is present at: https://biolab.put.poznan.pl/putemg-dataset/
 
@@ -11,7 +11,7 @@ All information about putEMG dataset is present at: https://biolab.put.poznan.pl
 
 ### 1) Download the dataset
 
-Dataset is available at our hosting and it can be downloaded manually, but we do strongly recomend using our automated 
+Dataset is available at our hosting and it can be downloaded manually, but we do strongly recommend using our automated 
 download script from another repository (https://github.com/biolab-put/putemg-downloader). Clone the downloader 
 repository and download proper putEMG data:
 
@@ -29,7 +29,7 @@ Clone the repository with example scripts together with all dependencies, instal
 
 ```shell
 > git clone --recursive git@github.com:biolab-put/putemg_examples.git
-> python -m pip install numpy scipy pandas matplotlib
+> python -m pip install numpy scipy pandas matplotlib sklearn
 
 > cd putemg_examples
 ```
@@ -45,12 +45,12 @@ Then the resulting data will be written to separate output file, eg.:
 
 ### 4) Run feature extraction example
 
-`calculate_features` example will calculate signal features of given putEMG trial file (can be previously filtered) and then save it to 
-separate output file. Features are calculated based on a feature list given in XML file 
-(see https://github.com/biolab-put/putemg_features for details), eg.::
+`calculate_features` example will calculate signal features of given putEMG trial file (can be previously filtered) 
+and then save it to separate output file. Features are calculated based on a feature list given in XML file 
+(see https://github.com/biolab-put/putemg_features for details), eg.:
 
 ```shell
-> calculate_features.py putemg_features/all_features.xml ../putEMG/Data-HDF5/emg_gestures-14-sequential-2018-04-06-10-30-11-595.hdf5 features-14-sequential-1.hdf5
+> calculate_features.py putemg_features/all_features.xml ../Data-HDF5/emg_gestures-14-sequential-2018-04-06-10-30-11-595.hdf5 features-14-sequential-1.hdf5
 ```
 
 or:
@@ -61,16 +61,18 @@ or:
 
 ### 5) Run full machine learning pipeline
 
-`shallow_learn` is a full data processing pipeline. This will filter the data, calculate selected feature set for all 
-trials. Then data will be divided into train and test sets (with k-fold validation). Then a series learning algorithms
+`shallow_learn` is a full data processing pipeline. This will filter the data, calculate selected feature sets for all 
+trials. Then data will be divided into train and test sets (with k-fold validation). Then a series of learning algorithms
 will be applied (LDA, QDA, kNN, SVM) with various combinations of feature sets (RMS, Hudgins, Du). 
-Bare in mind that the process is time-consuming. After finish results can be plotted using `shallow_learn_plot_results` 
+**Bare in mind that the process is time-consuming**. After finish results can be plotted using `shallow_learn_plot_results` 
 script.
 
 ```shell
-> shallow_learn.py ../putEMG/Data-HDF5/
+> mkdir shallow_learn_results
 
-> shallow_learn_plot_results.py
+> shallow_learn.py ../Data-HDF5/ ./shallow_learn_results/
+
+> shallow_learn_plot_results.py ./shallow_learn_results/
 ```
 
 `shallow_learn` example can be used to recreate results presented in article: TODO! title. When using putEMG dataset or
@@ -94,6 +96,7 @@ no. 2015/17/N/ST6/03571.
 * Pandas - https://pandas.pydata.org/
 * Numpy - http://www.numpy.org/
 * SciPy - https://www.scipy.org/
+* scikit-learn - https://scikit-learn.org/
 * Matplotlib - https://matplotlib.org/
 
 ## Attributions

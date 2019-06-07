@@ -8,6 +8,8 @@ import putemg_features
 
 def usage():
     print()
+    print('Calculates signal features of given putEMG trial file')
+    print()
     print('Usage: {:s} <feature_config_xml> <input_hdf5> <output_hdf5>'.format(os.path.basename(__file__)))
     print()
     print('Arguments:')
@@ -15,7 +17,7 @@ def usage():
     print('    <input_hdf5>             putEMG HDF5 file containing experiment data')
     print("    <output_hdf5>            output HDF5 file containing calculated feature data")
     print()
-    print('Examples:')
+    print('Example:')
     print('{:s} putemg_features/all_features.xml '
           '../putEMG/Data-HDF5/emg_gestures-14-sequential-2018-04-06-10-30-11-595.hdf5 '
           'features-14-sequential-1.hdf5'.
@@ -24,6 +26,9 @@ def usage():
 
 
 if __name__ == '__main__':
+    if '-h' in sys.argv or '--help' in sys.argv:
+        usage()
+
     if len(sys.argv) != 4:
         print('Illegal number of parameters')
         usage()
