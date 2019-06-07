@@ -20,7 +20,7 @@ repository and download proper putEMG data:
 > cd putEMG
 > git clone https://github.com/biolab-put/putemg-downloader
 
-> putemg-downloader/putemg_downloader.py emg_gestures data-hdf5
+> python ./putemg-downloader/putemg_downloader.py emg_gestures data-hdf5
 ```
 
 ### 2) Prepare repository with examples
@@ -40,7 +40,7 @@ Clone the repository with example scripts together with all dependencies, instal
 Then the resulting data will be written to separate output file, eg.:
 
 ```shell
-> filter.py ../Data-HDF5/emg_gestures-14-sequential-2018-04-06-10-30-11-595.hdf5 filtered-14-sequential-1.hdf5
+> python ./filter.py ../Data-HDF5/emg_gestures-14-sequential-2018-04-06-10-30-11-595.hdf5 filtered-14-sequential-1.hdf5
 ```
 
 ### 4) Run feature extraction example
@@ -50,13 +50,13 @@ and then save it to separate output file. Features are calculated based on a fea
 (see https://github.com/biolab-put/putemg_features for details), eg.:
 
 ```shell
-> calculate_features.py putemg_features/all_features.xml ../Data-HDF5/emg_gestures-14-sequential-2018-04-06-10-30-11-595.hdf5 features-14-sequential-1.hdf5
+> python ./calculate_features.py putemg_features/all_features.xml ../Data-HDF5/emg_gestures-14-sequential-2018-04-06-10-30-11-595.hdf5 features-14-sequential-1.hdf5
 ```
 
 or:
 
 ```shell
-> calculate_features.py putemg_features/all_features.xml filtered-14-sequential-1.hdf5 features-filtered-14-sequential-1.hdf5
+> python ./calculate_features.py putemg_features/all_features.xml filtered-14-sequential-1.hdf5 features-filtered-14-sequential-1.hdf5
 ```
 
 ### 5) Run full machine learning pipeline
@@ -70,9 +70,9 @@ script.
 ```shell
 > mkdir shallow_learn_results
 
-> shallow_learn.py ../Data-HDF5/ ./shallow_learn_results/
+> python ./shallow_learn.py ../Data-HDF5/ ./shallow_learn_results/
 
-> shallow_learn_plot_results.py ./shallow_learn_results/
+> python ./shallow_learn_plot_results.py ./shallow_learn_results/
 ```
 
 `shallow_learn` example can be used to recreate results presented in article: TODO! title. When using putEMG dataset or
