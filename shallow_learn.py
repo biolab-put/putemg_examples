@@ -191,6 +191,8 @@ if __name__ == '__main__':
                     print('\t\tFeature set: {:s} -'.format(feature_set_name), end='', flush=True)
 
                     # prepare training and testing set based on combination of k-fold split, feature set and gesture set
+                    # this is also where gesture transitions are deleted from training and test set
+                    # only active part of gesture performance remains
                     data = biolab_utilities.prepare_data(dfs, s, features, list(gestures.keys()))
 
                     # list columns containing only feature data
