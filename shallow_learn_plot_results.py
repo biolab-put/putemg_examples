@@ -197,10 +197,10 @@ if __name__ == '__main__':
         maj_ticks = maj_ticks / 1000
         min_ticks = min_ticks / 1000
 
-        ax_roc.set_xlim([0.375, 0.95])
+        ax_roc.set_xlim([0.35, 0.95])
         ax_roc.set_xticks(min_ticks, minor=True)
         ax_roc.set_xticks(maj_ticks)
-        ax_roc.set_ylim([0.375, 0.95])
+        ax_roc.set_ylim([0.35, 0.95])
         ax_roc.set_yticks(min_ticks, minor=True)
         ax_roc.set_yticks(maj_ticks)
 
