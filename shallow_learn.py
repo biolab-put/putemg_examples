@@ -65,6 +65,7 @@ if __name__ == '__main__':
         # by each filename in download folder
         for file in all_files:
             basename = os.path.basename(file)
+            filename = os.path.splitext(basename)[0]
             print('Denoising file: {:s}'.format(basename))
 
             # read raw putEMG data file and run filter
@@ -72,7 +73,7 @@ if __name__ == '__main__':
             biolab_utilities.apply_filter(df)
 
             # save filtered data to designated folder with prefix filtered_
-            output_file = 'filtered_' + basename
+            output_file = filename + '_filtered.hdf5'
             print('Saving to file: {:s}'.format(output_file))
             df.to_hdf(os.path.join(filtered_data_folder, output_file),
                       'data', format='table', mode='w', complevel=5)
@@ -88,7 +89,10 @@ if __name__ == '__main__':
 
         # by each filename in download folder
         for file in all_files:
-            filtered_file_name = 'filtered_' + os.path.basename(file)
+            basename = os.path.basename(file)
+            filename = os.path.splitext(basename)[0]
+
+            filtered_file_name = filename + '_filtered.hdf5'
             print('Calculating features for {:s} file'.format(filtered_file_name))
 
             # for filtered data file run feature extraction, use xml with limited feature set
@@ -96,7 +100,7 @@ if __name__ == '__main__':
                                                                  os.path.join(filtered_data_folder, filtered_file_name))
 
             # save extracted features file to designated folder with features_filtered_ prefix
-            output_file = 'features_' + filtered_file_name
+            output_file = filename + '_filtered_features.hdf5'
             print('Saving result to {:s} file'.format(output_file))
             ft.to_hdf(os.path.join(calculated_features_folder, output_file),
                       'data', format='table', mode='w', complevel=5)
@@ -119,7 +123,8 @@ if __name__ == '__main__':
     dfs: Dict[biolab_utilities.Record, pd.DataFrame] = {}
     for r in records_filtered_by_subject:
         print("Reading features for input file: ", r)
-        dfs[r] = pd.DataFrame(pd.read_hdf(os.path.join(calculated_features_folder, 'features_filtered_' + r.path)))
+        filename = os.path.splitext(r.path)[0]
+        dfs[r] = pd.DataFrame(pd.read_hdf(os.path.join(calculated_features_folder, filename + '_filtered_features.hdf5')))
 
     # create k-fold validation set, with 3 splits - for each experiment day 3 combination are generated
     # this results in 6 data combination for each subject
@@ -148,7 +153,7 @@ if __name__ == '__main__':
     classifiers = {
         "LDA": {"solver": "svd", "shrinkage": None, "priors": None, "n_components": None,
                 "store_covariance": False, "tol": 0.0001},
-        "QDA": {"priors": None, "reg_param": 0.3, "store_covariance": False, "tol": 0.0001, "store_covariances": None},
+        "QDA": {"priors": None, "reg_param": 0.3, "store_covariance": False, "tol": 0.0001},
         "kNN": {"n_neighbors": 5, "weights": "uniform", "algorithm": "auto", "leaf_size": 30, "p": 2,
                 "metric": "minkowski", "metric_params": None, "n_jobs": None},
         "SVM": {"C": 1.0, "kernel": "rbf", "degree": 3, "gamma": "auto_deprecated", "coef0": 0.0, "shrinking": True,
