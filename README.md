@@ -28,7 +28,7 @@ repository and download proper putEMG data:
 Clone the repository with example scripts together with all dependencies, install all python dependencies:
 
 ```shell
-> git clone --recursive git@github.com:biolab-put/putemg_examples.git
+> git clone --recursive https://github.com/biolab-put/putemg_examples.git
 > python -m pip install numpy scipy pandas matplotlib sklearn
 
 > cd putemg_examples
