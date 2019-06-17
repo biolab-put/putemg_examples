@@ -37,8 +37,8 @@ if __name__ == '__main__':
 
     # Plot precision, recall (presented as ROC), f1, accuracy by classifier and feature set
     if 1:
-        output: Dict[str, any] = dict()
-        output = pickle.load(open(os.path.join(working_directory, "classification_result_24chn.bin"), "rb"))
+        output: Dict[str, any] = pickle.load(
+            open(os.path.join(working_directory, "classification_result_24chn.bin"), "rb"))
 
         fig_precision, ax_precision = plt.subplots(num="precision", figsize=(1800/96, 450/96), dpi=96)
         fig_recall, ax_recall = plt.subplots(num="recall", figsize=(1800/96, 450/96), dpi=96)
@@ -128,15 +128,15 @@ if __name__ == '__main__':
                 f1_75percentile.append(np.percentile(f1, 75))
                 accuracy_75percentile.append(np.percentile(accuracy, 75))
 
-                ax_roc.scatter(recall_median[-1], precision_median[-1],
+                ax_roc.scatter(recall_mean[-1], precision_mean[-1],  # median -> mean !!!
                                c=roc_fset_mark_colors[set_], marker=roc_cls_mark_types[clf],
                                s=[300], zorder=3)
-                ax_roc.errorbar(recall_median[-1], precision_median[-1],
+                ax_roc.errorbar(recall_mean[-1], precision_mean[-1],
                                 fmt='none', ecolor=roc_fset_mark_colors[set_], lw=2, capsize=10, capthick=2,
-                                yerr=[[precision_median[-1] - precision_25percentile[-1]],
-                                      [precision_75percentile[-1] - precision_median[-1]]],
-                                xerr=[[recall_median[-1] - recall_25percentile[-1]],
-                                      [recall_75percentile[-1] - recall_median[-1]]],
+                                yerr=[[precision_mean[-1] - precision_25percentile[-1]],
+                                      [precision_75percentile[-1] - precision_mean[-1]]],
+                                xerr=[[recall_mean[-1] - recall_25percentile[-1]],
+                                      [recall_75percentile[-1] - recall_mean[-1]]],
                                 zorder=2)
                 roc_legend_str = roc_legend_str + (clf + ' - ' + set_,)
 
@@ -221,7 +221,7 @@ if __name__ == '__main__':
         fig_roc.subplots_adjust(left=0.05, right=0.99, top=0.985, bottom=0.09)
 
     # precision of separate gesture classification using a given classifier and set
-    if 1:
+    if 0:
         clf = "LDA"
         set_ = "Du"
 
@@ -232,8 +232,7 @@ if __name__ == '__main__':
 
         for ch_set in channel_set.keys():
 
-            output: Dict[str, any] = dict()
-            output = pickle.load(
+            output: Dict[str, any] = pickle.load(
                 open(os.path.join(working_directory, "classification_result_" + ch_set + ".bin"), "rb"))
 
             precision_by_gesture: Dict[int, List] = dict()

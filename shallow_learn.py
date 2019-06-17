@@ -151,21 +151,60 @@ if __name__ == '__main__':
 
     # defines classifiers and its options to be used in shallow learn
     classifiers = {
-        "LDA": {"solver": "svd", "shrinkage": None, "priors": None, "n_components": None,
-                "store_covariance": False, "tol": 0.0001},
-        "QDA": {"priors": None, "reg_param": 0.3, "store_covariance": False, "tol": 0.0001},
-        "kNN": {"n_neighbors": 5, "weights": "uniform", "algorithm": "auto", "leaf_size": 30, "p": 2,
-                "metric": "minkowski", "metric_params": None, "n_jobs": None},
-        "SVM": {"C": 1.0, "kernel": "rbf", "degree": 3, "gamma": "auto_deprecated", "coef0": 0.0, "shrinking": True,
-                "probability": False, "tol": 0.001, "cache_size": 200, "class_weight": None, "verbose": False,
-                "max_iter": -1, "decision_function_shape": "ovr", "random_state": None}
+        "LDA": {
+            "predictor": "LDA",
+            "args": {"solver": "svd", "shrinkage": None, "priors": None, "n_components": None,
+                     "store_covariance": False, "tol": 0.0001}},
+        "QDA": {
+            "predictor": "QDA",
+            "args": {"priors": None, "reg_param": 0.3, "store_covariance": False, "tol": 0.0001}},
+        "kNN-5": {
+            "predictor": "kNN",
+            "args": {"n_neighbors": 5, "weights": "uniform", "algorithm": "auto", "leaf_size": 30, "p": 2,
+                     "metric": "minkowski", "metric_params": None, "n_jobs": None}},
+        # "kNN-15":
+        #     {"predictor": "kNN",
+        #      "args": {"n_neighbors": 15, "weights": "uniform", "algorithm": "auto", "leaf_size": 30, "p": 2,
+        #               "metric": "minkowski", "metric_params": None, "n_jobs": None}},
+        # "kNN-30":
+        #     {"predictor": "kNN",
+        #      "args": {"n_neighbors": 30, "weights": "uniform", "algorithm": "auto", "leaf_size": 30, "p": 2,
+        #               "metric": "minkowski", "metric_params": None, "n_jobs": None}},
+        # "kNN-45":
+        #     {"predictor": "kNN",
+        #      "args": {"n_neighbors": 45, "weights": "uniform", "algorithm": "auto", "leaf_size": 30, "p": 2,
+        #               "metric": "minkowski", "metric_params": None, "n_jobs": None}},
+        # "SVM-0.4":
+        #     {"predictor": "kNN",
+        #      "args": {"C": 0.4, "kernel": "rbf", "degree": 3, "gamma": "auto_deprecated", "coef0": 0.0,
+        #               "shrinking": True, "probability": False, "tol": 0.001, "cache_size": 200,
+        #               "class_weight": None, "verbose": False, "max_iter": -1, "decision_function_shape": "ovr",
+        #               "random_state": None}},
+        # "SVM-0.6":
+        #     {"predictor": "kNN",
+        #      "args": {"C": 0.6, "kernel": "rbf", "degree": 3, "gamma": "auto_deprecated", "coef0": 0.0,
+        #               "shrinking": True, "probability": False, "tol": 0.001, "cache_size": 200,
+        #               "class_weight": None, "verbose": False, "max_iter": -1, "decision_function_shape": "ovr",
+        #               "random_state": None}},
+        # "SVM-0.8":
+        #     {"predictor": "kNN",
+        #      "args": {"C": 0.8, "kernel": "rbf", "degree": 3, "gamma": "auto_deprecated", "coef0": 0.0,
+        #               "shrinking": True, "probability": False, "tol": 0.001, "cache_size": 200,
+        #               "class_weight": None, "verbose": False, "max_iter": -1, "decision_function_shape": "ovr",
+        #               "random_state": None}},
+        "SVM-1.0":
+            {"predictor": "kNN",
+             "args": {"C": 1.0, "kernel": "rbf", "degree": 3, "gamma": "auto_deprecated", "coef0": 0.0,
+                      "shrinking": True, "probability": False, "tol": 0.001, "cache_size": 200,
+                      "class_weight": None, "verbose": False, "max_iter": -1, "decision_function_shape": "ovr",
+                      "random_state": None}}
     }
 
     # defines channels configurations for which classification will be run
     channel_range = {
         "24chn": {"begin": 1, "end": 24},
         # "8chn_1band": {"begin": 1, "end": 8},
-        "8chn_2band": {"begin": 9, "end": 16},
+        # "8chn_2band": {"begin": 9, "end": 16},
         # "8chn_3band": {"begin": 17, "end": 24}
     }
 
@@ -216,13 +255,15 @@ if __name__ == '__main__':
                     test_y_true = data["test"]["output_0"]
 
                     # for each defined classifier
-                    for clf, clf_args in classifiers.items():
-                        print(' {:s}'.format(clf), end='', flush=True)
+                    for clf_id, clf_settings in classifiers.items():
+                        print(' {:s}'.format(clf_id), end='', flush=True)
 
                         # prepare classifier pipeline
                         # fit the classifier to train data
-                        pipeline = biolab_utilities.prepare_pipeline(train_x, train_y, predictor=clf,
-                                                                     norm_per_feature=False, **clf_args)
+                        pipeline = biolab_utilities.prepare_pipeline(train_x, train_y,
+                                                                     predictor=clf_settings["predictor"],
+                                                                     norm_per_feature=False,
+                                                                     **clf_settings["args"])
 
                         # run prediction on test data
                         test_y_pred = pipeline.predict(test_x)
@@ -231,7 +272,8 @@ if __name__ == '__main__':
                         cm = confusion_matrix(test_y_true.values.astype(int), test_y_pred, list(gestures.keys()))
 
                         # save classification results to output structure
-                        output["results"].append({"id": id_, "split": i_s, "clf": clf, "feature_set": feature_set_name,
+                        output["results"].append({"id": id_, "split": i_s, "clf": clf_id,
+                                                  "feature_set": feature_set_name,
                                                   "cm": cm, "y_true": test_y_true.values.astype(int),
                                                   "y_pred": test_y_pred})
                     print()
