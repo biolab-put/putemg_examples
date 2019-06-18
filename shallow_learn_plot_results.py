@@ -221,7 +221,7 @@ if __name__ == '__main__':
         fig_roc.subplots_adjust(left=0.05, right=0.99, top=0.985, bottom=0.09)
 
     # precision of separate gesture classification using a given classifier and set
-    if 0:
+    if 1:
         clf = "LDA"
         set_ = "Du"
 
