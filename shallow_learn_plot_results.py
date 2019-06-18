@@ -50,7 +50,7 @@ if __name__ == '__main__':
 
         fig_roc, ax_roc = plt.subplots(num="precision_vs_recall", figsize=(1800/96, 800/96), dpi=96)
 
-        roc_cls_mark_types = {'LDA': 'o', 'QDA': '^', 'SVM': 'D', 'kNN': 's'}
+        roc_cls_mark_types = ['o', '^', 's', 'D', 'v', '<', '>', '8', 'p', '*', 'h', 'H', 'd', 'P', 'X']
         roc_fset_mark_colors = {'RMS': '#21557A', 'Hudgins': '#FF7F0E', 'Du': '#2CA02A'}
         roc_legend_str = ()
 
@@ -84,7 +84,7 @@ if __name__ == '__main__':
             accuracy_25percentile = []
             accuracy_75percentile = []
 
-            for clf in output["classifiers"].keys():
+            for i_clf, clf in enumerate(output["classifiers"].keys()):
                 data = list(filter(lambda r: r["clf"] == clf and r["feature_set"] == set_, output["results"]))
 
                 y_true = [r["y_true"] for r in data]
@@ -129,7 +129,7 @@ if __name__ == '__main__':
                 accuracy_75percentile.append(np.percentile(accuracy, 75))
 
                 ax_roc.scatter(recall_mean[-1], precision_mean[-1],  # median -> mean !!!
-                               c=roc_fset_mark_colors[set_], marker=roc_cls_mark_types[clf],
+                               c=roc_fset_mark_colors[set_], marker=roc_cls_mark_types[i_clf],
                                s=[300], zorder=3)
                 ax_roc.errorbar(recall_mean[-1], precision_mean[-1],
                                 fmt='none', ecolor=roc_fset_mark_colors[set_], lw=2, capsize=10, capthick=2,

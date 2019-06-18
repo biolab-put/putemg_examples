@@ -23,8 +23,8 @@ def usage():
     print('    <output_folder>          URL to a output folder - results and intermediate files will be written here')
     print()
     print('Options:')
-    print('    -nf      Skip filtering phase, use only if filtering was already applied, and filtered filed do exist')
-    print('    -nc      Skip feature calculation phase, use only if features were already calculated and files do exist')
+    print('    -nf      Skip filtering phase, use only if filtering was already applied, and filtered files exist')
+    print('    -nc      Skip feature calculation phase, use only if features were already calculated and files exist')
     print()
     print('Example:')
     print('{:s} ../putEMG/Data-HDF5/ ./shallow_learn_results/'.format(os.path.basename(__file__)))
@@ -124,7 +124,8 @@ if __name__ == '__main__':
     for r in records_filtered_by_subject:
         print("Reading features for input file: ", r)
         filename = os.path.splitext(r.path)[0]
-        dfs[r] = pd.DataFrame(pd.read_hdf(os.path.join(calculated_features_folder, filename + '_filtered_features.hdf5')))
+        dfs[r] = pd.DataFrame(pd.read_hdf(os.path.join(calculated_features_folder,
+                                                       filename + '_filtered_features.hdf5')))
 
     # create k-fold validation set, with 3 splits - for each experiment day 3 combination are generated
     # this results in 6 data combination for each subject
@@ -158,43 +159,13 @@ if __name__ == '__main__':
         "QDA": {
             "predictor": "QDA",
             "args": {"priors": None, "reg_param": 0.3, "store_covariance": False, "tol": 0.0001}},
-        "kNN-5": {
+        "kNN": {
             "predictor": "kNN",
             "args": {"n_neighbors": 5, "weights": "uniform", "algorithm": "auto", "leaf_size": 30, "p": 2,
                      "metric": "minkowski", "metric_params": None, "n_jobs": None}},
-        # "kNN-15":
-        #     {"predictor": "kNN",
-        #      "args": {"n_neighbors": 15, "weights": "uniform", "algorithm": "auto", "leaf_size": 30, "p": 2,
-        #               "metric": "minkowski", "metric_params": None, "n_jobs": None}},
-        # "kNN-30":
-        #     {"predictor": "kNN",
-        #      "args": {"n_neighbors": 30, "weights": "uniform", "algorithm": "auto", "leaf_size": 30, "p": 2,
-        #               "metric": "minkowski", "metric_params": None, "n_jobs": None}},
-        # "kNN-45":
-        #     {"predictor": "kNN",
-        #      "args": {"n_neighbors": 45, "weights": "uniform", "algorithm": "auto", "leaf_size": 30, "p": 2,
-        #               "metric": "minkowski", "metric_params": None, "n_jobs": None}},
-        # "SVM-0.4":
-        #     {"predictor": "kNN",
-        #      "args": {"C": 0.4, "kernel": "rbf", "degree": 3, "gamma": "auto_deprecated", "coef0": 0.0,
-        #               "shrinking": True, "probability": False, "tol": 0.001, "cache_size": 200,
-        #               "class_weight": None, "verbose": False, "max_iter": -1, "decision_function_shape": "ovr",
-        #               "random_state": None}},
-        # "SVM-0.6":
-        #     {"predictor": "kNN",
-        #      "args": {"C": 0.6, "kernel": "rbf", "degree": 3, "gamma": "auto_deprecated", "coef0": 0.0,
-        #               "shrinking": True, "probability": False, "tol": 0.001, "cache_size": 200,
-        #               "class_weight": None, "verbose": False, "max_iter": -1, "decision_function_shape": "ovr",
-        #               "random_state": None}},
-        # "SVM-0.8":
-        #     {"predictor": "kNN",
-        #      "args": {"C": 0.8, "kernel": "rbf", "degree": 3, "gamma": "auto_deprecated", "coef0": 0.0,
-        #               "shrinking": True, "probability": False, "tol": 0.001, "cache_size": 200,
-        #               "class_weight": None, "verbose": False, "max_iter": -1, "decision_function_shape": "ovr",
-        #               "random_state": None}},
-        "SVM-1.0":
-            {"predictor": "kNN",
-             "args": {"C": 1.0, "kernel": "rbf", "degree": 3, "gamma": "auto_deprecated", "coef0": 0.0,
+        "SVM":
+            {"predictor": "SVM",
+             "args": {"C": 50.0, "kernel": "rbf", "degree": 3, "gamma": "auto_deprecated", "coef0": 0.0,
                       "shrinking": True, "probability": False, "tol": 0.001, "cache_size": 200,
                       "class_weight": None, "verbose": False, "max_iter": -1, "decision_function_shape": "ovr",
                       "random_state": None}}
@@ -204,7 +175,7 @@ if __name__ == '__main__':
     channel_range = {
         "24chn": {"begin": 1, "end": 24},
         # "8chn_1band": {"begin": 1, "end": 8},
-        # "8chn_2band": {"begin": 9, "end": 16},
+        "8chn_2band": {"begin": 9, "end": 16},
         # "8chn_3band": {"begin": 17, "end": 24}
     }
 
