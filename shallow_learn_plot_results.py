@@ -35,6 +35,8 @@ if __name__ == '__main__':
 
     working_directory = sys.argv[1]
 
+    feature_set_colors = {'RMS': '#21557A', 'Hudgins': '#FF7F0E', 'Du': '#2CA02A'}
+
     # Plot precision, recall (presented as ROC), f1, accuracy by classifier and feature set
     if 1:
         output: Dict[str, any] = pickle.load(
@@ -51,7 +53,6 @@ if __name__ == '__main__':
         fig_roc, ax_roc = plt.subplots(num="precision_vs_recall", figsize=(1800/96, 800/96), dpi=96)
 
         roc_cls_mark_types = ['o', '^', 's', 'D', 'v', '<', '>', '8', 'p', '*', 'h', 'H', 'd', 'P', 'X']
-        roc_fset_mark_colors = {'RMS': '#21557A', 'Hudgins': '#FF7F0E', 'Du': '#2CA02A'}
         roc_legend_str = ()
 
         index = np.arange(len(output["classifiers"]))
@@ -129,10 +130,10 @@ if __name__ == '__main__':
                 accuracy_75percentile.append(np.percentile(accuracy, 75))
 
                 ax_roc.scatter(recall_mean[-1], precision_mean[-1],  # median -> mean !!!
-                               c=roc_fset_mark_colors[set_], marker=roc_cls_mark_types[i_clf],
+                               c=feature_set_colors[set_], marker=roc_cls_mark_types[i_clf],
                                s=[300], zorder=3)
                 ax_roc.errorbar(recall_mean[-1], precision_mean[-1],
-                                fmt='none', ecolor=roc_fset_mark_colors[set_], lw=2, capsize=10, capthick=2,
+                                fmt='none', ecolor=feature_set_colors[set_], lw=2, capsize=10, capthick=2,
                                 yerr=[[precision_mean[-1] - precision_25percentile[-1]],
                                       [precision_75percentile[-1] - precision_mean[-1]]],
                                 xerr=[[recall_mean[-1] - recall_25percentile[-1]],
@@ -222,79 +223,78 @@ if __name__ == '__main__':
 
     # precision of separate gesture classification using a given classifier and set
     if 1:
-        clf = "LDA"
-        set_ = "Du"
+        for clf, set_ in [("LDA", "Du"), ("LDA", "Hudgins"), ("SVM", "RMS")]:
+            channel_set = {
+                "24chn": "24 channels",
+                "8chn_2band": "8 channels - middle band",
+            }
 
-        channel_set = {
-            "24chn": "24 channels",
-            "8chn_2band": "8 channels - middle band",
-        }
+            for ch_set in channel_set.keys():
 
-        for ch_set in channel_set.keys():
+                output: Dict[str, any] = pickle.load(
+                    open(os.path.join(working_directory, "classification_result_" + ch_set + ".bin"), "rb"))
 
-            output: Dict[str, any] = pickle.load(
-                open(os.path.join(working_directory, "classification_result_" + ch_set + ".bin"), "rb"))
+                precision_by_gesture: Dict[int, List] = dict()
+                acc_by_gesture: Dict[int, List] = dict()
 
-            precision_by_gesture: Dict[int, List] = dict()
-            acc_by_gesture: Dict[int, List] = dict()
+                data = list(filter(lambda r: r["clf"] == clf and r["feature_set"] == set_, output["results"]))
 
-            data = list(filter(lambda r: r["clf"] == clf and r["feature_set"] == set_, output["results"]))
+                y_true = [r["y_true"] for r in data]
+                y_pred = [r["y_pred"] for r in data]
 
-            y_true = [r["y_true"] for r in data]
-            y_pred = [r["y_pred"] for r in data]
+                for t, p in zip(y_true, y_pred):
+                    for gesture in output["gestures"].keys():
+                        t_bin = (t == gesture)
+                        p_bin = (p == gesture)
 
-            for t, p in zip(y_true, y_pred):
+                        prec = precision_score(t_bin, p_bin)
+                        if gesture in precision_by_gesture:
+                            precision_by_gesture[gesture].append(prec)
+                        else:
+                            precision_by_gesture[gesture] = [prec]
+
+                precision_mean = []
+                precision_std = []
+                precision_median = []
+                precision_25percentile = []
+                precision_75percentile = []
+
                 for gesture in output["gestures"].keys():
-                    t_bin = (t == gesture)
-                    p_bin = (p == gesture)
+                    precision_mean.append(np.mean(precision_by_gesture[gesture]))
+                    precision_std.append(np.std(precision_by_gesture[gesture]))
+                    precision_median.append(np.median(precision_by_gesture[gesture]))
+                    precision_25percentile.append(np.percentile(precision_by_gesture[gesture], 25))
+                    precision_75percentile.append(np.percentile(precision_by_gesture[gesture], 75))
 
-                    prec = precision_score(t_bin, p_bin)
-                    if gesture in precision_by_gesture:
-                        precision_by_gesture[gesture].append(prec)
-                    else:
-                        precision_by_gesture[gesture] = [prec]
+                index = np.arange(len(output["gestures"]))
+                bar_width = 0.40
 
-            precision_mean = []
-            precision_std = []
-            precision_median = []
-            precision_25percentile = []
-            precision_75percentile = []
+                fig, ax = plt.subplots(num="precision_" + clf + "_" + set_ + "_" + ch_set,
+                                       figsize=(800 / 96, 500 / 96), dpi=96)
 
-            for gesture in output["gestures"].keys():
-                precision_mean.append(np.mean(precision_by_gesture[gesture]))
-                precision_std.append(np.std(precision_by_gesture[gesture]))
-                precision_median.append(np.median(precision_by_gesture[gesture]))
-                precision_25percentile.append(np.percentile(precision_by_gesture[gesture], 25))
-                precision_75percentile.append(np.percentile(precision_by_gesture[gesture], 75))
+                ax.title.set_fontsize(25)
 
-            index = np.arange(len(output["gestures"]))
-            bar_width = 0.40
+                ax.bar(index, precision_mean, bar_width, color=feature_set_colors[set_])
+                ax.errorbar(index, precision_median, fmt='ko', ecolor='k', lw=2, capsize=10,
+                            yerr=[np.array(precision_median) - np.array(precision_25percentile),
+                                  np.array(precision_75percentile) - np.array(precision_median)])
 
-            fig, ax = plt.subplots(num="precision_" + ch_set, figsize=(800 / 96, 500 / 96), dpi=96)
+                ax.set_ylabel('Precision')
+                ax.yaxis.label.set_size(25)
 
-            ax.title.set_fontsize(25)
+                ax.set_xticklabels(output["gestures"].values(), rotation=45)
+                ax.set_xticks(index)
 
-            ax.bar(index, precision_mean, bar_width, color='#2CA02A')
-            ax.errorbar(index, precision_median, fmt='ko', ecolor='k', lw=2, capsize=10,
-                        yerr=[np.array(precision_median) - np.array(precision_25percentile),
-                              np.array(precision_75percentile) - np.array(precision_median)])
+                maj_ticks = np.arange(0, 1100, step=100)
+                maj_ticks = maj_ticks / 1000
 
-            ax.set_ylabel('Precision')
-            ax.yaxis.label.set_size(25)
+                ax.set_ylim([0, 1.01])
+                ax.set_yticks(maj_ticks)
+                ax.yaxis.grid(b=True, which='major', linestyle='-')
+                ax.set_axisbelow(True)
 
-            ax.set_xticklabels(output["gestures"].values(), rotation=45)
-            ax.set_xticks(index)
+                ax.tick_params(axis='both', which='major', labelsize=15)
 
-            maj_ticks = np.arange(0, 1100, step=100)
-            maj_ticks = maj_ticks / 1000
-
-            ax.set_ylim([0, 1.01])
-            ax.set_yticks(maj_ticks)
-            ax.yaxis.grid(b=True, which='major', linestyle='-')
-            ax.set_axisbelow(True)
-
-            ax.tick_params(axis='both', which='major', labelsize=15)
-
-            fig.subplots_adjust(left=0.1, right=0.99, top=0.99, bottom=0.22)
+                fig.subplots_adjust(left=0.1, right=0.99, top=0.99, bottom=0.22)
 
     plt.show()
