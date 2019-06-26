@@ -38,7 +38,7 @@ if __name__ == '__main__':
     feature_set_colors = {'RMS': '#21557A', 'Hudgins': '#FF7F0E', 'Du': '#2CA02A'}
 
     # Plot precision, recall (presented as ROC), f1, accuracy by classifier and feature set
-    if 1:
+    if 0:
         output: Dict[str, any] = pickle.load(
             open(os.path.join(working_directory, "classification_result_24chn.bin"), "rb"))
 
@@ -59,7 +59,7 @@ if __name__ == '__main__':
         bar_width = 0.15
         bar_spacer = 0.025
 
-        for i, set_ in enumerate(output["feature_sets"].keys()):
+        for i, feature_set in enumerate(output["feature_sets"].keys()):
 
             precision_mean = []
             precision_std = []
@@ -86,7 +86,7 @@ if __name__ == '__main__':
             accuracy_75percentile = []
 
             for i_clf, clf in enumerate(output["classifiers"].keys()):
-                data = list(filter(lambda r: r["clf"] == clf and r["feature_set"] == set_, output["results"]))
+                data = list(filter(lambda r: r["clf"] == clf and r["feature_set"] == feature_set, output["results"]))
 
                 y_true = [r["y_true"] for r in data]
                 y_pred = [r["y_pred"] for r in data]
@@ -130,36 +130,36 @@ if __name__ == '__main__':
                 accuracy_75percentile.append(np.percentile(accuracy, 75))
 
                 ax_roc.scatter(recall_mean[-1], precision_mean[-1],  # median -> mean !!!
-                               c=feature_set_colors[set_], marker=roc_cls_mark_types[i_clf],
+                               c=feature_set_colors[feature_set], marker=roc_cls_mark_types[i_clf],
                                s=[300], zorder=3)
                 ax_roc.errorbar(recall_mean[-1], precision_mean[-1],
-                                fmt='none', ecolor=feature_set_colors[set_], lw=2, capsize=10, capthick=2,
+                                fmt='none', ecolor=feature_set_colors[feature_set], lw=2, capsize=10, capthick=2,
                                 yerr=[[precision_mean[-1] - precision_25percentile[-1]],
                                       [precision_75percentile[-1] - precision_mean[-1]]],
                                 xerr=[[recall_mean[-1] - recall_25percentile[-1]],
                                       [recall_75percentile[-1] - recall_mean[-1]]],
                                 zorder=2)
-                roc_legend_str = roc_legend_str + (clf + ' - ' + set_,)
+                roc_legend_str = roc_legend_str + (clf + ' - ' + feature_set,)
 
-            ax_precision.bar(index + (bar_width + bar_spacer) * i, precision_mean, bar_width, label=set_)
+            ax_precision.bar(index + (bar_width + bar_spacer) * i, precision_mean, bar_width, label=feature_set)
             ax_precision.errorbar(index + (bar_width + bar_spacer) * i, precision_median,
                                   fmt='ko', ecolor='k', lw=2, capsize=10,
                                   yerr=[np.array(precision_median) - np.array(precision_25percentile),
                                         np.array(precision_75percentile) - np.array(precision_median)])
 
-            ax_recall.bar(index + (bar_width + bar_spacer) * i, recall_mean, bar_width, label=set_)
+            ax_recall.bar(index + (bar_width + bar_spacer) * i, recall_mean, bar_width, label=feature_set)
             ax_recall.errorbar(index + (bar_width + bar_spacer) * i, recall_median,
                                fmt='ko', ecolor='k', lw=2, capsize=10,
                                yerr=[np.array(recall_median) - np.array(recall_25percentile),
                                      np.array(recall_75percentile) - np.array(recall_median)])
 
-            ax_f1.bar(index + (bar_width + bar_spacer) * i, f1_mean, bar_width, label=set_)
+            ax_f1.bar(index + (bar_width + bar_spacer) * i, f1_mean, bar_width, label=feature_set)
             ax_f1.errorbar(index + (bar_width + bar_spacer) * i, f1_median,
                            fmt='ko', ecolor='k', lw=2, capsize=10,
                            yerr=[np.array(f1_median) - np.array(f1_25percentile),
                                  np.array(f1_75percentile) - np.array(f1_median)])
 
-            ax_accuracy.bar(index + (bar_width + bar_spacer) * i, accuracy_mean, bar_width, label=set_)
+            ax_accuracy.bar(index + (bar_width + bar_spacer) * i, accuracy_mean, bar_width, label=feature_set)
             ax_accuracy.errorbar(index + (bar_width + bar_spacer) * i, accuracy_median,
                                  fmt='ko', ecolor='k', lw=2, capsize=10,
                                  yerr=[np.array(accuracy_median) - np.array(accuracy_25percentile),
@@ -223,21 +223,31 @@ if __name__ == '__main__':
 
     # precision of separate gesture classification using a given classifier and set
     if 1:
-        for clf, set_ in [("LDA", "Du"), ("LDA", "Hudgins"), ("SVM", "RMS")]:
-            channel_set = {
-                "24chn": "24 channels",
-                "8chn_2band": "8 channels - middle band",
-            }
+        channel_sets = {
+            "24chn": "24 ch.",
+            "8chn_2band": "8 ch.",
+        }
 
-            for ch_set in channel_set.keys():
+        classifier_feature_sets = [("LDA", "Du"), ("LDA", "Hudgins"), ("SVM", "RMS")]
 
-                output: Dict[str, any] = pickle.load(
-                    open(os.path.join(working_directory, "classification_result_" + ch_set + ".bin"), "rb"))
+        bar_width = 0.2
+        bar_spacer = 0.025
 
+        for ch_set in channel_sets.keys():
+            output: Dict[str, any] = pickle.load(
+                open(os.path.join(working_directory, "classification_result_" + ch_set + ".bin"), "rb"))
+
+            index = np.arange(len(output["gestures"]))
+
+            fig, ax = plt.subplots(num="precision_" + ch_set,
+                                   figsize=(1800/96, 500/96), dpi=96)
+            ax.title.set_fontsize(25)
+
+            for i, (clf, feature_set) in enumerate(classifier_feature_sets):
                 precision_by_gesture: Dict[int, List] = dict()
                 acc_by_gesture: Dict[int, List] = dict()
 
-                data = list(filter(lambda r: r["clf"] == clf and r["feature_set"] == set_, output["results"]))
+                data = list(filter(lambda r: r["clf"] == clf and r["feature_set"] == feature_set, output["results"]))
 
                 y_true = [r["y_true"] for r in data]
                 y_pred = [r["y_pred"] for r in data]
@@ -266,35 +276,38 @@ if __name__ == '__main__':
                     precision_25percentile.append(np.percentile(precision_by_gesture[gesture], 25))
                     precision_75percentile.append(np.percentile(precision_by_gesture[gesture], 75))
 
-                index = np.arange(len(output["gestures"]))
-                bar_width = 0.40
-
-                fig, ax = plt.subplots(num="precision_" + clf + "_" + set_ + "_" + ch_set,
-                                       figsize=(800 / 96, 500 / 96), dpi=96)
-
-                ax.title.set_fontsize(25)
-
-                ax.bar(index, precision_mean, bar_width, color=feature_set_colors[set_])
-                ax.errorbar(index, precision_median, fmt='ko', ecolor='k', lw=2, capsize=10,
+                index_i = index + (bar_width + bar_spacer) * i \
+                    - (len(classifier_feature_sets) - 1)/2 * (bar_width + bar_spacer)
+                ax.bar(index_i,
+                       precision_mean, bar_width, label=clf + " - " + feature_set,
+                       color=feature_set_colors[feature_set])
+                ax.errorbar(index_i, precision_median, fmt='ko', ecolor='k', lw=2, capsize=10,
                             yerr=[np.array(precision_median) - np.array(precision_25percentile),
                                   np.array(precision_75percentile) - np.array(precision_median)])
 
-                ax.set_ylabel('Precision')
-                ax.yaxis.label.set_size(25)
+            # ax.bar(index, precision_mean_all, bar_width, color=feature_set_colors[set_])
+            # ax.errorbar(index, precision_median, fmt='ko', ecolor='k', lw=2, capsize=10,
+            #             yerr=[np.array(precision_median) - np.array(precision_25percentile),
+            #                   np.array(precision_75percentile) - np.array(precision_median)])
 
-                ax.set_xticklabels(output["gestures"].values(), rotation=45)
-                ax.set_xticks(index)
+            ax.legend(fontsize=18, loc=[0.05, 0.11])
 
-                maj_ticks = np.arange(0, 1100, step=100)
-                maj_ticks = maj_ticks / 1000
+            ax.set_ylabel('Precision (' + channel_sets[ch_set] + ')')
+            ax.yaxis.label.set_size(25)
 
-                ax.set_ylim([0, 1.01])
-                ax.set_yticks(maj_ticks)
-                ax.yaxis.grid(b=True, which='major', linestyle='-')
-                ax.set_axisbelow(True)
+            ax.set_xticklabels(output["gestures"].values(), rotation=45)
+            ax.set_xticks(index)
 
-                ax.tick_params(axis='both', which='major', labelsize=15)
+            maj_ticks = np.arange(0, 1100, step=100)
+            maj_ticks = maj_ticks / 1000
 
-                fig.subplots_adjust(left=0.1, right=0.99, top=0.99, bottom=0.22)
+            ax.set_ylim([0, 1.01])
+            ax.set_yticks(maj_ticks)
+            ax.yaxis.grid(b=True, which='major', linestyle='-')
+            ax.set_axisbelow(True)
+
+            ax.tick_params(axis='both', which='major', labelsize=15)
+
+            fig.subplots_adjust(left=0.1, right=0.99, top=0.99, bottom=0.22)
 
     plt.show()
