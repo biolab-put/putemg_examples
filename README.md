@@ -36,7 +36,7 @@ Clone the repository with example scripts together with all dependencies, instal
 
 ### 3) Run filtering example
 
-`filter` example will apply denosing filter to a single file using bandpass filter with cutoff frequencies of 20 and 700~Hz and notch filter attenuating frequencies of 30, 50, 90, 60, and 150~Hz. Then the resulting data will be written to separate output file, eg.:
+`filter` example will apply denosing filter to a single file using bandpass filter with cutoff frequencies of 20 and 700 Hz and notch filter attenuating frequencies of 30, 50, 90, 60, and 150 Hz. Then the resulting data will be written to separate output file, eg.:
 
 ```shell
 > python3 ./filter.py ../Data-HDF5/emg_gestures-14-sequential-2018-04-06-10-30-11-595.hdf5 filtered-14-sequential-1.hdf5
