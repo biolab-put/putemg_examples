@@ -38,7 +38,7 @@ if __name__ == '__main__':
     feature_set_colors = {'RMS': '#21557A', 'Hudgins': '#FF7F0E', 'Du': '#2CA02A'}
 
     # Plot precision, recall (presented as ROC), f1, accuracy by classifier and feature set
-    if 0:
+    if 1:
         output: Dict[str, any] = pickle.load(
             open(os.path.join(working_directory, "classification_result_24chn.bin"), "rb"))
 
@@ -53,7 +53,7 @@ if __name__ == '__main__':
         fig_roc, ax_roc = plt.subplots(num="precision_vs_recall", figsize=(1800/96, 800/96), dpi=96)
 
         roc_cls_mark_types = ['o', '^', 's', 'D', 'v', '<', '>', '8', 'p', '*', 'h', 'H', 'd', 'P', 'X']
-        roc_legend_str = ()
+        roc_legend_str = []
 
         index = np.arange(len(output["classifiers"]))
         bar_width = 0.15
@@ -139,27 +139,31 @@ if __name__ == '__main__':
                                 xerr=[[recall_mean[-1] - recall_25percentile[-1]],
                                       [recall_75percentile[-1] - recall_mean[-1]]],
                                 zorder=2)
-                roc_legend_str = roc_legend_str + (clf + ' - ' + feature_set,)
+                roc_legend_str.append(clf + '/' + feature_set)
 
-            ax_precision.bar(index + (bar_width + bar_spacer) * i, precision_mean, bar_width, label=feature_set)
+            ax_precision.bar(index + (bar_width + bar_spacer) * i, precision_mean, bar_width, label=feature_set,
+                             color=feature_set_colors[feature_set])
             ax_precision.errorbar(index + (bar_width + bar_spacer) * i, precision_median,
                                   fmt='ko', ecolor='k', lw=2, capsize=10,
                                   yerr=[np.array(precision_median) - np.array(precision_25percentile),
                                         np.array(precision_75percentile) - np.array(precision_median)])
 
-            ax_recall.bar(index + (bar_width + bar_spacer) * i, recall_mean, bar_width, label=feature_set)
+            ax_recall.bar(index + (bar_width + bar_spacer) * i, recall_mean, bar_width, label=feature_set,
+                          color=feature_set_colors[feature_set])
             ax_recall.errorbar(index + (bar_width + bar_spacer) * i, recall_median,
                                fmt='ko', ecolor='k', lw=2, capsize=10,
                                yerr=[np.array(recall_median) - np.array(recall_25percentile),
                                      np.array(recall_75percentile) - np.array(recall_median)])
 
-            ax_f1.bar(index + (bar_width + bar_spacer) * i, f1_mean, bar_width, label=feature_set)
+            ax_f1.bar(index + (bar_width + bar_spacer) * i, f1_mean, bar_width, label=feature_set,
+                      color=feature_set_colors[feature_set])
             ax_f1.errorbar(index + (bar_width + bar_spacer) * i, f1_median,
                            fmt='ko', ecolor='k', lw=2, capsize=10,
                            yerr=[np.array(f1_median) - np.array(f1_25percentile),
                                  np.array(f1_75percentile) - np.array(f1_median)])
 
-            ax_accuracy.bar(index + (bar_width + bar_spacer) * i, accuracy_mean, bar_width, label=feature_set)
+            ax_accuracy.bar(index + (bar_width + bar_spacer) * i, accuracy_mean, bar_width, label=feature_set,
+                            color=feature_set_colors[feature_set])
             ax_accuracy.errorbar(index + (bar_width + bar_spacer) * i, accuracy_median,
                                  fmt='ko', ecolor='k', lw=2, capsize=10,
                                  yerr=[np.array(accuracy_median) - np.array(accuracy_25percentile),
@@ -279,7 +283,7 @@ if __name__ == '__main__':
                 index_i = index + (bar_width + bar_spacer) * i \
                     - (len(classifier_feature_sets) - 1)/2 * (bar_width + bar_spacer)
                 ax.bar(index_i,
-                       precision_mean, bar_width, label=clf + " - " + feature_set,
+                       precision_mean, bar_width, label=clf + "/" + feature_set,
                        color=feature_set_colors[feature_set])
                 ax.errorbar(index_i, precision_median, fmt='ko', ecolor='k', lw=2, capsize=10,
                             yerr=[np.array(precision_median) - np.array(precision_25percentile),
@@ -308,6 +312,6 @@ if __name__ == '__main__':
 
             ax.tick_params(axis='both', which='major', labelsize=15)
 
-            fig.subplots_adjust(left=0.1, right=0.99, top=0.99, bottom=0.22)
+            fig.subplots_adjust(left=0.05, right=0.99, top=0.99, bottom=0.22)
 
     plt.show()
