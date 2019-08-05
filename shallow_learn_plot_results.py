@@ -92,15 +92,15 @@ if __name__ == '__main__':
                 y_pred = [r["y_pred"] for r in data]
 
                 precision = [precision_score(t, p, average="macro", labels=np.unique(p))
-                             for t, p in zip(y_pred, y_true)]
+                             for p, t in zip(y_pred, y_true)]
 
                 recall = [recall_score(t, p, average="macro", labels=np.unique(t))
-                          for t, p in zip(y_pred, y_true)]
+                          for p, t in zip(y_pred, y_true)]
 
                 f1 = [f1_score(t, p, average="macro", labels=np.unique(np.concatenate((t, p))))
-                      for t, p in zip(y_pred, y_true)]
+                      for p, t in zip(y_pred, y_true)]
 
-                accuracy = [accuracy_score(t, p, normalize=True) for t, p in zip(y_pred, y_true)]
+                accuracy = [accuracy_score(t, p, normalize=True) for p, t in zip(y_pred, y_true)]
 
                 cm_sum = sum([r["cm"] for r in data])
 
@@ -194,7 +194,7 @@ if __name__ == '__main__':
 
             f.subplots_adjust(left=0.05, right=0.99, top=0.99, bottom=0.09)
 
-        ax_roc.legend(roc_legend_str, ncol=3, fontsize=25, loc='upper left')
+        ax_roc.legend(roc_legend_str, ncol=3, fontsize=25, loc='lower right')
 
         maj_ticks = np.arange(400, 1000, step=100)
         min_ticks = np.arange(375, 950, step=25)
@@ -205,9 +205,9 @@ if __name__ == '__main__':
         ax_roc.set_xlim([0.35, 0.95])
         ax_roc.set_xticks(min_ticks, minor=True)
         ax_roc.set_xticks(maj_ticks)
-        ax_roc.set_ylim([0.35, 0.95])
         ax_roc.set_yticks(min_ticks, minor=True)
         ax_roc.set_yticks(maj_ticks)
+        ax_roc.set_ylim([0.45, 0.95])
 
         ax_roc.tick_params(axis='both', which='major', labelsize=15)
 
