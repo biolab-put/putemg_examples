@@ -74,8 +74,7 @@ script.
 > python3 ./shallow_learn_plot_results.py ./shallow_learn_results/
 ```
 
-`shallow_learn` example can be used to recreate results presented in article: TODO! title. When using putEMG dataset or
-`putemg_examples` scripts please cite: 
+`shallow_learn` example can be used to recreate results presented in article: ***putEMG—A Surface Electromyography Hand Gesture Recognition Dataset***. When using putEMG dataset or `putemg_examples` scripts please cite: 
 
 ```text
 Kaczmarek, P.; Mańkowski, T.; Tomczyński, J. putEMG—A Surface Electromyography Hand Gesture Recognition Dataset. Sensors 2019, 19, 3548. 
