@@ -78,7 +78,20 @@ script.
 `putemg_examples` scripts please cite: 
 
 ```text
-TBD
+Kaczmarek, P.; Mańkowski, T.; Tomczyński, J. putEMG—A Surface Electromyography Hand Gesture Recognition Dataset. Sensors 2019, 19, 3548. 
+ 
+@article{putEMGKaczmarek2019,
+	author = {Kaczmarek, Piotr and Mańkowski, Tomasz and Tomczyński, Jakub},
+	title = {putEMG—A Surface Electromyography Hand Gesture Recognition Dataset},
+	journal = {Sensors},
+	volume = {19},
+	year = {2019},
+	number = {16},
+	article-number = {3548},
+	url = {https://www.mdpi.com/1424-8220/19/16/3548},
+	issn = {1424-8220},
+	doi = {10.3390/s19163548}
+}
 ```
 
 ## License notes
